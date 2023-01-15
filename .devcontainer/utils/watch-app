@@ -1,0 +1,14 @@
+#!/bin/bash
+wait_for_server() {
+	local max_attempts="${ROCKETCHAT_MAX_ATTEMPTS:-50}"
+	local counter=0
+
+	until [[ "$(curl http://localhost:3000/health)" == "ok" ]]; do
+		((counter >= max_attempts)) && printf "timeout reached, couldn't connect to Rocket.Chat" &> /dev/null && exit 1
+		counter=$((counter + 1))
+		sleep 1
+	done
+}
+
+wait_for_server
+rc-apps watch

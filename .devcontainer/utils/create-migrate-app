@@ -1,0 +1,42 @@
+#!/bin/bash
+declare -A app_json=(name= support_url= homepage_url= author= description=)
+
+get_publishing_info() {
+	local t
+	for key in "${!app_json[@]}"; do
+		read -p "Enter ${key}: " t
+		[[ -n $t ]] && app_json[$key]=$t && continue
+		while [[ -z "${app_json[$key]}" ]]; do
+			printf "You must provide a '$key' value" >&2
+			read -p "Enter ${key}: " t
+			app_json[$key]=$t
+		done
+	done
+}
+
+migrate() {
+	[[ -z ${app_json[name]} ]] && return
+	find ${app_json[name]} -maxdepth 1 \
+		! -name .git \
+		! -name .gitignore \
+		! -name .rcappsconfig \
+		-execdir cp -rvf {} . \; &&
+			rm -rvf ${app_json[name]}
+}
+
+create_app() {
+	rc-apps create \
+		-H ${app_json[homepage_url]} \
+		-a ${app_json[author]} \
+		-s ${app_json[support_url]} \
+		-d ${app_json[description]} \
+		-n ${app_json[name]} || exit 1
+}
+
+main() {
+	get_publishing_info
+	create_app
+	migrate
+}
+
+main

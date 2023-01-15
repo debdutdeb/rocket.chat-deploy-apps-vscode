@@ -1,0 +1,14 @@
+{
+	"name": "Rocket.Chat",
+	"dockerComposeFile": "compose.yaml",
+	"service": "rocketchat",
+	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	// "features": {},
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+	"postCreateCommand": "npm install @rocket.chat/apps-cli --unsafe-perm --global",
+	"postStartCommand": "[ -f app.json ] || create-migrate-app",
+	"remoteUser": "vscode",
+	"postAttachCommand": "[ -f app.json ] && watch-app"
+}

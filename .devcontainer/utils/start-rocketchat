@@ -1,0 +1,13 @@
+#!/bin/bash
+start_rocketchat() {
+	local max_attempts="${ROCKETCHAT_MAX_ATTEMPTS:-50}"
+	local counter=0
+	until node main.js; do
+		((counter >= max_attempts)) && printf "timeout reached, couldn't connect to Rocket.Chat" >&2 && exit 1
+		printf "Attempt #%s" $counter
+		counter=$((counter + 1))
+		sleep 1
+	done
+}
+
+cd /app/bundle && start_rocketchat
